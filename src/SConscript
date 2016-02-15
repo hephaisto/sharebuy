@@ -1,0 +1,46 @@
+debug=int(ARGUMENTS.get("debug",0))
+
+env=Environment(tools=["default","textfile"])
+if debug:
+	env.Append(CCFLAGS="-ggdb")
+env.Append(CCFLAGS="-std=c++11")
+env.Append(CCFLAGS="-DBOOST_ALL_DYN_LINK")
+
+
+sources=[
+"shop/BasketListWidget.cpp",
+"shop/BasketAddTemplate.cpp",
+"shop/BasketFormTemplate.cpp",
+"shop/Shop.cpp",
+"shop/InputItemWidget.cpp",
+"shop/Item.cpp",
+"shop/ItemGroupCheckbox.cpp",
+#"shop/Order.cpp",
+
+"user/User.cpp",
+"user/Session.cpp",
+
+"application.cpp",
+"sharebuy.cpp",
+]
+
+print(sources)
+libs=[
+"wt",
+"wthttp",
+"boost_system",
+"boost_thread",
+"boost_filesystem",
+"boost_log",
+"boost_log_setup",
+"pthread",
+"boost_signals",
+"boost_regex",
+"boost_program_options",
+
+"wtdbo",
+"wtdbosqlite3"
+]
+
+sharebuy=env.Program(target="sharebuy",source=sources, LIBS=libs)
+Default(sharebuy)
