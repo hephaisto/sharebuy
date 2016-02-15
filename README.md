@@ -26,9 +26,11 @@ Share online-orders with friends to save on shipping
 ## Build dependencies
 * scons
 
-# compilation
+## compilation
 
     scons
+
+Debugging symbols can be enabled by setting debug=1 as parameter.
 
 # Usage
     Release/sharebuy --shopdir <path/to/shop/config> --dbfile <path/to/file/for/database> --docroot /usr/share/Wt/ --http-address <interface> --http-port <port>
