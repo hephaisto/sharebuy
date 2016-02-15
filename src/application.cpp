@@ -10,7 +10,6 @@
 #include <Wt/WBorderLayout>
 
 #include "shop/BasketListWidget.hpp"
-#include "AddItems.hpp"
 #include "shop/InputItemWidget.hpp"
 #include "shop/ItemGroupCheckbox.hpp"
 
