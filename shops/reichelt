@@ -1,0 +1,14 @@
+name "Reichelt"
+homepage "reichelt.de"
+; positional parameters: number (running index), shop_specific_id, shop_specific_id_2, count
+item_image_template "http://www.reichelt.de/artimage/resize_33x33/%3%"
+basket_form
+{
+	item_template "<input type=\"hidden\" name=\"DirectInput_[%1%+1]\" value=\"%2%\"/><input type=\"hidden\" name=\"DirectInput_count_[%1%+1]\" value=\"%4%\"/>"
+	form_template "<form target=\"_blank\" action=\"http://www.reichelt.de/Warenkorb/5/index.html?&ACTION=5&LA=5&SHOW=1&LINES=1\" method=\"post\">%1%<input type=\"submit\"/ value=\"Add to cart\"></form>"
+}
+input_url_regex "http://www\\.reichelt\\.de/.+?/.*index\\.html.*ARTICLE=(?<number2>\\d+)&.*artnr=(?<number>.+)$"
+
+; available named captures:
+; number, number2, title, price
+page_regex "<span itemprop=\"name\">(?<title>.*?)</span>.*<div id=\"av_price\">(?<price>.+?) .*?</div>"
