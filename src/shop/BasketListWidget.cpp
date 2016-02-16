@@ -15,11 +15,11 @@
 
 
 
-BasketListWidget::BasketListWidget(ShopList shops, string shopName, string userId, string orderId, Wt::WContainerWidget *parent)
+BasketListWidget::BasketListWidget(ShopList shops, string shopName, PUser user, string orderId, Wt::WContainerWidget *parent)
 :Wt::WPanel(parent),
 shops(shops),
 shopName(shopName),
-userId(userId),
+user(user),
 orderId(orderId),
 canDelete(false),
 orderStatus(false),
@@ -64,9 +64,9 @@ void BasketListWidget::update()
 	Session& dbSession = static_cast<ShareBuy*>(Wt::WApplication::instance())->dbSession;
 	dbo::Transaction transaction(dbSession);
 	dbo::Query<PItem> query = dbSession.find<Item>();
-	if(userId != "")
+	if(user)
 	{
-		query.where("user_id = ?").bind(userId);
+		query.where("user_id = ?").bind(user.id());
 	}
 	else
 		query.orderBy("user_id");

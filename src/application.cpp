@@ -70,11 +70,12 @@ shops(shops)
 void ShareBuy::showUserItems()
 {
 	InputItemWidget *input = new InputItemWidget(shops,content);
-	string userId = dbSession.login().user().id();
 	//dbo::Query<PItem> query = dbSession.find<Item>().where("user_id = ?").bind(user.id());
 	//BasketListWidget *add=new BasketListWidget(shops, query, content);
 	
-	BasketListWidget *pending=new BasketListWidget(shops, "", userId, "", content);
+	PUser user = dbSession.user();
+	
+	BasketListWidget *pending=new BasketListWidget(shops, "", user, "", content);
 	pending->setTitle("Your items");
 	pending->setCanDelete(true);
 	pending->setOnlyOrderStatus(false);
@@ -86,11 +87,11 @@ void ShareBuy::showUserItems()
 	dbo::Transaction transaction(dbSession);
 	dbo::collection<dbo::ptr<Order> > myOrders = dbSession.query<dbo::ptr<Order> >(
 		"select ordering from ordering,item where item.user_id=? and item.ordering_id=ordering.id group by ordering.id order by ordering.id desc"
-		).bind(userId);
+		).bind(user.id());
 
 	BOOST_FOREACH(auto order, myOrders)
 	{
-		BasketListWidget *ordered=new BasketListWidget(shops, "", userId, boost::lexical_cast<string>(order.id()), content);
+		BasketListWidget *ordered=new BasketListWidget(shops, "", user, boost::lexical_cast<string>(order.id()), content);
 		ordered->setTitle("Ordered by "+order->user->getUsername()); // TODO get user name from order
 		ordered->setOnlyOrderStatus(true);
 		ordered->update();
@@ -99,14 +100,12 @@ void ShareBuy::showUserItems()
 
 void ShareBuy::showUserOrders()
 {
-	string userId = dbSession.login().user().id();
-
 	dbo::Transaction transaction(dbSession);
-	dbo::collection<dbo::ptr<Order> > myOrders = dbSession.find<Order >().where("user_id = ?").bind(userId).orderBy("id desc");
+	dbo::collection<dbo::ptr<Order> > myOrders = dbSession.find<Order >().where("user_id = ?").bind(dbSession.user().id()).orderBy("id desc");
 
 	BOOST_FOREACH(auto order, myOrders)
 	{
-		BasketListWidget *list=new BasketListWidget(shops, "", "", boost::lexical_cast<string>(order.id()), content);
+		BasketListWidget *list=new BasketListWidget(shops, "", PUser(), boost::lexical_cast<string>(order.id()), content);
 		list->setTitle("Order");
 		list->setShowAddToCartButton(true);
 		list->setCanDelete(true);
@@ -126,7 +125,7 @@ void ShareBuy::showShop(string shopName)
 
 		//dbo::Query<PItem> query = dbSession.find<Item>().where("shop_name = ?").bind(shopName);
 		//BasketListWidget *add=new BasketListWidget(shops, query, content);
-		BasketListWidget *add=new BasketListWidget(shops, shopName, "", "", content);
+		BasketListWidget *add=new BasketListWidget(shops, shopName, PUser(), "", content);
 		add->setTitle("currently all items for the shop from all users");
 		add->setOnlyOrderStatus(false);
 		add->update();

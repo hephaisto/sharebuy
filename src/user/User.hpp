@@ -30,6 +30,8 @@ public:
 	string getUsername() const;
 };
 
+typedef dbo::ptr<User> PUser;
+
 DBO_EXTERN_TEMPLATES(User);
 
 #endif // H_SHAREBUY_USER

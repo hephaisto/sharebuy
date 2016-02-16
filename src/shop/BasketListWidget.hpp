@@ -10,7 +10,7 @@ using std::shared_ptr;
 class BasketListWidget : public Wt::WPanel
 {
 public:
-	BasketListWidget(ShopList shops, string shopName, string userId, string orderId, Wt::WContainerWidget *parent);
+	BasketListWidget(ShopList shops, string shopName, PUser user, string orderId, Wt::WContainerWidget *parent);
 	//BasketListWidget(ShopList shops, dbo::Query<PItem> query, Wt::WContainerWidget *parent);
 	void setCanDelete(bool canDelete);
 	void setOnlyOrderStatus(bool orderStatus);
@@ -19,7 +19,7 @@ public:
 private:
 	shared_ptr<std::map<string, shared_ptr<Shop> > > shops;
 	string shopName;
-	string userId;
+	PUser user;
 	string orderId;
 	//dbo::Query<PItem> query;
 	bool canDelete;
