@@ -80,7 +80,7 @@ void InputItemWidget::changed()
 			Wt::Http::Client *client = new Wt::Http::Client(Wt::WApplication::instance());
 			client->setTimeout(10);
 			client->setMaximumResponseSize(1024*1024);
-			client->done().connect([ this, newText, url_match, shop, count, urlMatches ](boost::system::error_code err, const Wt::Http::Message& response, Wt::NoClass, Wt::NoClass, Wt::NoClass, Wt::NoClass)
+			client->done().connect([ this, client, newText, url_match, shop, count, urlMatches ](boost::system::error_code err, const Wt::Http::Message& response, Wt::NoClass, Wt::NoClass, Wt::NoClass, Wt::NoClass)
 			{
 				std::cout<<"done()\n";
 
@@ -160,6 +160,7 @@ void InputItemWidget::changed()
 				}
 				else
 					std::cout<<"error: "<<err.message()<<"\n";
+				delete client;
 				btn->setEnabled(true);
 				btn->setText("Add");
 				edit->setPlaceholderText("Paste URL here");
