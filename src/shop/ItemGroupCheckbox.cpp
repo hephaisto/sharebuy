@@ -31,9 +31,10 @@ total(0)
 	table->setHeaderCount(1);
 	table->setWidth(Wt::WLength("50%"));
 
-	table->elementAt(0, 1)->addWidget(new Wt::WText("user"));
-	table->elementAt(0, 2)->addWidget(new Wt::WText("items"));
-	table->elementAt(0, 3)->addWidget(new Wt::WText("total"));
+	table->elementAt(0, 0)->addWidget(new Wt::WText("user"));
+	table->elementAt(0, 1)->addWidget(new Wt::WText("items"));
+	table->elementAt(0, 2)->addWidget(new Wt::WText("total"));
+	table->elementAt(0, 3)->addWidget(new Wt::WText("order for this user"));
 
 	totalField = new Wt::WText("0.00");
 	
@@ -79,10 +80,10 @@ total(0)
 			}
 			totalField->setText(boost::lexical_cast<string>(total));
 		});
-		table->elementAt(row,0)->addWidget(checkbox);
-		table->elementAt(row,1)->addWidget(new Wt::WText(tuple.get<1>()));
-		table->elementAt(row,2)->addWidget(new Wt::WText(boost::lexical_cast<string>(tuple.get<2>())));
-		table->elementAt(row,3)->addWidget(new Wt::WText(boost::lexical_cast<string>(tuple.get<3>())));
+		table->elementAt(row,3)->addWidget(checkbox);
+		table->elementAt(row,0)->addWidget(new Wt::WText(tuple.get<1>()));
+		table->elementAt(row,1)->addWidget(new Wt::WText(boost::lexical_cast<string>(tuple.get<2>())));
+		table->elementAt(row,2)->addWidget(new Wt::WText(boost::lexical_cast<string>(tuple.get<3>())));
 
 		/*
 		std::cout<<"userID: "<<tuple.get<0>()<<"\n";
@@ -93,8 +94,8 @@ total(0)
 
 		row++;
 	}
-	table->elementAt(row,3)->addWidget(totalField);
-	table->elementAt(row,4)->addWidget(btnOrder);
+	table->elementAt(row,2)->addWidget(totalField);
+	table->elementAt(row,3)->addWidget(btnOrder);
 
 	}
 

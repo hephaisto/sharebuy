@@ -33,14 +33,9 @@ shops(shops)
 	nav->addMenu(leftMenu);
 
 	// my items
-	Wt::WMenuItem *myItems = leftMenu->addItem("my items");
-	myItems->setLink(Wt::WLink(Wt::WLink::InternalPath,"/user/items"));
+	Wt::WMenuItem *myItems = leftMenu->addItem("My wishlist");
+	myItems->setLink(Wt::WLink(Wt::WLink::InternalPath,"/user/wishlist"));
 	myItems->setSelectable(false);
-
-	// my orders
-	Wt::WMenuItem *myOrders = leftMenu->addItem("my orders");
-	myOrders->setLink(Wt::WLink(Wt::WLink::InternalPath,"/user/orders"));
-	myOrders->setSelectable(false);
 
 	// shops
 	Wt::WPopupMenu *shopMenu=new Wt::WPopupMenu();
@@ -50,7 +45,12 @@ shops(shops)
 	}
 	/*Wt::WMenuItem *shopItem=new Wt::WMenuItem("Shops");
 	shopItem->setMenu(shopMenu);*/
-	leftMenu->addMenu("Shops",shopMenu);
+	leftMenu->addMenu("All user's wishlists",shopMenu);
+
+	// my orders
+	Wt::WMenuItem *myOrders = leftMenu->addItem("Stuff I ordered");
+	myOrders->setLink(Wt::WLink(Wt::WLink::InternalPath,"/user/orders"));
+	myOrders->setSelectable(false);
 
 	// main window
 	Wt::WContainerWidget *main = new Wt::WContainerWidget(this->root());
@@ -69,6 +69,8 @@ shops(shops)
 
 void ShareBuy::showUserItems()
 {
+	new Wt::WText("<h1>Your personal wishlist</h1>", content);
+	new Wt::WText("<p>Paste the URL for the item and the number of items below.</p>", content);
 	InputItemWidget *input = new InputItemWidget(shops,content);
 	//dbo::Query<PItem> query = dbSession.find<Item>().where("user_id = ?").bind(user.id());
 	//BasketListWidget *add=new BasketListWidget(shops, query, content);
@@ -100,6 +102,8 @@ void ShareBuy::showUserItems()
 
 void ShareBuy::showUserOrders()
 {
+	new Wt::WText("<h1>Items you ordered for other users</h1>", content);
+
 	dbo::Transaction transaction(dbSession);
 	dbo::collection<dbo::ptr<Order> > myOrders = dbSession.find<Order >().where("user_id = ?").bind(dbSession.user().id()).orderBy("id desc");
 
@@ -118,6 +122,7 @@ void ShareBuy::showUserOrders()
 
 void ShareBuy::showShop(string shopName)
 {
+	new Wt::WText("<h1>Items other users want from "+shopName+"</h1>", content);
 	if(shops->find(shopName)!=shops->end())
 	{
 	
@@ -149,7 +154,7 @@ void ShareBuy::onInternalPathChange()
 		}*/
 
 		//dbo::Query<PItem> query = dbSession.find<Item>().where("shop_name = ?").bind(shop->name);
-		if(internalPath()=="/user/items")
+		if(internalPath()=="/user/wishlist")
 			showUserItems();
 		else if(internalPath()=="/user/orders")
 			showUserOrders();
