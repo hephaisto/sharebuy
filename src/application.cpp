@@ -125,13 +125,13 @@ void ShareBuy::showShop(string shopName)
 	new Wt::WText("<h1>Items other users want from "+shopName+"</h1>", content);
 	if(shops->find(shopName)!=shops->end())
 	{
-	
-		new ItemGroupCheckbox(shopName, content);
+		ItemGroupCheckbox *groupCb = new ItemGroupCheckbox(shopName, content);
+		groupCb->setTitle("Which users to order for?");
 
 		//dbo::Query<PItem> query = dbSession.find<Item>().where("shop_name = ?").bind(shopName);
 		//BasketListWidget *add=new BasketListWidget(shops, query, content);
 		BasketListWidget *add=new BasketListWidget(shops, shopName, PUser(), "", content);
-		add->setTitle("currently all items for the shop from all users");
+		add->setTitle("Detailed list of items");
 		add->setOnlyOrderStatus(false);
 		add->update();
 	}

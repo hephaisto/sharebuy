@@ -8,9 +8,12 @@
 #include "../application.hpp"
 
 ItemGroupCheckbox::ItemGroupCheckbox(string shopName, Wt::WContainerWidget *parent)
-:Wt::WContainerWidget(parent),
+:Wt::WPanel(parent),
 total(0)
 {
+	Wt::WContainerWidget *root = new Wt::WContainerWidget();
+	setCentralWidget(root);
+
 	Session& dbSession = static_cast<ShareBuy*>(Wt::WApplication::instance())->dbSession;
 	dbo::Transaction transaction(dbSession);
 	// user_id, item count, total price
@@ -27,7 +30,7 @@ total(0)
 
 	dbo::collection<QueryTuple> result = query; // execute query
 
-	Wt::WTable *table = new Wt::WTable(this);
+	Wt::WTable *table = new Wt::WTable(root);
 	table->setHeaderCount(1);
 	table->setWidth(Wt::WLength("50%"));
 

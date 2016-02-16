@@ -1,9 +1,9 @@
-#include <Wt/WContainerWidget>
+#include <Wt/WPanel>
 #include <Wt/WText>
 #include <string>
 using std::string;
 
-class ItemGroupCheckbox : public Wt::WContainerWidget
+class ItemGroupCheckbox : public Wt::WPanel
 {
 public:
 	ItemGroupCheckbox(string shopName, Wt::WContainerWidget *parent = NULL);
