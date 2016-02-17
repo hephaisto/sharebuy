@@ -9,7 +9,7 @@ public:
 	BasketFormTemplate(bpt::ptree &pt);
 	virtual Wt::WWidget* getBasketAddWidget(std::set<PItem> items) const;
 private:
-	const boost::format form_template;
-	const boost::format item_template;
+	boost::format form_template;
+	boost::format item_template;
 };
 
