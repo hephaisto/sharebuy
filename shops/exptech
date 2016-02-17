@@ -1,0 +1,16 @@
+name "Exp-Tech"
+homepage "exp-tech.de"
+; positional parameters: number (running index), shop_specific_id, shop_specific_id_2, count
+
+input_url_regex ".*exp-tech\\.de.*"
+
+item_image_template ""
+basket_form
+{
+	item_template "<input type=\"hidden\" name=\"product%2%\" value=\"%4%\"/>"
+	form_template "<form target=\"_blank\" method=\"post\" action=\"http://www.exp-tech.de/expcatalog/bigorderform/\">%1%<button type=\"submit\">Place order at exp-tech</button></form>"
+}
+
+; available named captures:
+; number, number2, title, price
+page_regex "<h2 class=\"product-name-again\">(?<title>.+?)</h2>.*<input type=\"hidden\" name=\"product\" value=\"(?<number>.+?)\" />.*<span class=\"price\">(?<price>[0-9,\\.]+).*?</span>"
