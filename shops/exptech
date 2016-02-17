@@ -13,4 +13,4 @@ basket_form
 
 ; available named captures:
 ; number, number2, title, price
-page_regex "<h2 class=\"product-name-again\">(?<title>.+?)</h2>.*<input type=\"hidden\" name=\"product\" value=\"(?<number>.+?)\" />.*<span class=\"price\">(?<price>[0-9,\\.]+).*?</span>"
+page_regex "<h2 class=\"product-name-again\">(?<title>.+?)</h2>.*<input type=\"hidden\" name=\"product\" value=\"(?<number>.+?)\" />.*?<span class=\"price\">(?<price>[0-9,\\.]+).*?</span>"
