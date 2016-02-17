@@ -164,7 +164,7 @@ void ShareBuy::onInternalPathChange()
 			showShop(shopName);
 		}
 		else
-			setInternalPath("/user/items", true);
+			setInternalPath("/user/wishlist", true);
 
 	}
 	else
