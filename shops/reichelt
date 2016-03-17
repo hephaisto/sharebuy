@@ -11,4 +11,4 @@ input_url_regex "http://www\\.reichelt\\.de/.+?/.*index\\.html.*ARTICLE=(?<numbe
 
 ; available named captures:
 ; number, number2, title, price
-page_regex "<span itemprop=\"name\">(?<title>.*?)</span>.*<div id=\"av_price\">(?<price>.+?) .*?</div>"
+page_regex "<h2>(?<number>.*?) <span> :: <span itemprop=\"name\">(?<title>.*?)</span>.*<div id=\"av_price\">(?<price>.+?) .*?</div>"
