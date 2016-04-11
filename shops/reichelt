@@ -1,6 +1,6 @@
 name "Reichelt"
 homepage "reichelt.de"
-; positional parameters: number (running index), shop_specific_id, shop_specific_id_2, count
+; positional parameters: number (running index), shop_specific_id, shop_specific_id_2, count, number+1
 item_image_template "http://www.reichelt.de/artimage/resize_33x33/%3%"
 basket_form
 {

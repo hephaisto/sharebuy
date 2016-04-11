@@ -1,6 +1,6 @@
 name "Exp-Tech"
 homepage "exp-tech.de"
-; positional parameters: number (running index), shop_specific_id, shop_specific_id_2, count
+; positional parameters: number (running index), shop_specific_id, shop_specific_id_2, count, number+1
 
 input_url_regex ".*exp-tech\\.de.*"
 
