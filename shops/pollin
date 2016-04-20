@@ -1,0 +1,15 @@
+name "Pollin"
+homepage "pollin.de"
+; positional parameters: number (running index), shop_specific_id, shop_specific_id_2, count, number+1
+;item_image_template "http://cdn.pollin.de/article/big/%3%.JPG"
+item_image_template ""
+basket_form
+{
+	item_template "<input type=\"hidden\" name=\"art[%5%][quantity]\" value=\"%4%\"/><input type=\"hidden\" name=\"art[%5%][ordernr]\" value=\"%2%\"/><input type=\"hidden\" name=\"art[%5%][wkz]\" value=\"\"/>"
+	form_template "<form target=\"_blank\" action=\"http://www.pollin.de/shop/direktbestellung2.html\" method=\"post\" name=\"frmDirectOrder\">%1%<input type=\"hidden\" name=\"next\" value=\"1\"/><input type=\"submit\"/ value=\"Place order at pollin\"></form>"
+}
+input_url_regex "http://www.pollin.de/shop/.*\\.html.*"
+
+; available named captures:
+; number, number2, title, price
+page_regex "<h1>(?<title>.*?)</h1>.*<img src=\"http://cdn\\.pollin\\.de/article/big/(?<number2>.*?)\\.JPG\" alt=\"\" /><span class=\"sb-clickEnlarge\".*<li class=\"priceRegular\"><strong>Preis:</strong> <span class=\"price\"><strong>(?<price>.+?) .*?</strong></span></li>.*<abbr title=\"Best-Nummer\">Best.Nr. </abbr>(?<number>[\\d ]+)<span class=\"hidden\">"

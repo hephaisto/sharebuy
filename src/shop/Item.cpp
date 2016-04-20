@@ -17,5 +17,5 @@ count(count)
 
 string Item::formatInto(const boost::format fmt, int number) const
 {
-	return (boost::format(fmt) % number % shop_specific_id % shop_specific_id_2 % count).str();
+	return (boost::format(fmt) % number % shop_specific_id % shop_specific_id_2 % count % (number+1)).str();
 }
