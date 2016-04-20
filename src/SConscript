@@ -1,6 +1,9 @@
+import packaging
+import glob
+
 debug=int(ARGUMENTS.get("debug",0))
 
-env=Environment(tools=["default","textfile"])
+env=Environment(tools=["default","textfile",git_tag_version,get_architecture_from_dpkg])
 if debug:
 	env.Append(CCFLAGS="-ggdb")
 env.Append(CCFLAGS="-std=c++11")
@@ -44,3 +47,12 @@ libs=[
 
 sharebuy=env.Program(target="sharebuy",source=sources, LIBS=libs)
 Default(sharebuy)
+
+# package
+shop_configs = glob.glob("../shops/*")
+print("x",shop_configs)
+package=packaging.make_debian("sharebuy",[
+	(sharebuy,"/usr/bin/sharebuy")]+
+	[(File(sc),"/usr/share/sharebuy/shops/{}".format(sc)) for sc in shop_configs]
+	, env)
+env.Alias("package",package)

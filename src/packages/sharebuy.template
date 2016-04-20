@@ -1,0 +1,6 @@
+Package: sharebuy
+Section: misc
+Priority: optional
+Homepage: https://github.com/hephaisto/sharebuy
+Description: Coordinate onlineshopping with other users to save on shipping costs.
+Maintainer: hephaisto <hephaisto@users.noreply.github.com>
