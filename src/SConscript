@@ -25,6 +25,7 @@ sources=[
 
 "application.cpp",
 "sharebuy.cpp",
+"UserSettings.cpp"
 ]
 
 print(sources)
