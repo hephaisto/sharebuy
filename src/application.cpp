@@ -60,7 +60,7 @@ authWidget(NULL)
 	nav->addMenu(rightMenu, Wt::AlignRight);
 
 	// settings
-	Wt::WMenuItem *settings = leftMenu->addItem("Settings");
+	Wt::WMenuItem *settings = rightMenu->addItem("Settings");
 	settings->setLink(Wt::WLink(Wt::WLink::InternalPath,"/user/settings"));
 	settings->setSelectable(false);
 
