@@ -30,6 +30,7 @@ public:
 	}
 
 	string getUsername() const;
+	void updatePassword(Wt::WString password);
 };
 
 typedef dbo::ptr<User> PUser;
