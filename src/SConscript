@@ -21,10 +21,12 @@ sources=[
 #"shop/Order.cpp",
 
 "user/User.cpp",
+"user/UserDisplay.cpp",
 "user/Session.cpp",
 
 "application.cpp",
 "sharebuy.cpp",
+"UserSettings.cpp"
 ]
 
 print(sources)
