@@ -18,6 +18,7 @@ public:
 	dbo::collection<dbo::ptr<Item> > items;
 	dbo::collection<dbo::ptr<Order> > orders;
 	Wt::Dbo::collection< Wt::Dbo::ptr<AuthInfo> > authInfos;
+	bool isAdmin;
 
 	template<class Action>
 	void persist(Action& a)
@@ -25,6 +26,7 @@ public:
 		dbo::hasMany(a, items, dbo::ManyToOne, "user");
 		dbo::hasMany(a, orders, dbo::ManyToOne, "user");
 		dbo::hasMany(a, authInfos, Wt::Dbo::ManyToOne, "user");
+		dbo::field(a, isAdmin, "isAdmin");
 	}
 
 	string getUsername() const;
