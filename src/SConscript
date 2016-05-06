@@ -9,6 +9,7 @@ if debug:
 env.Append(CCFLAGS="-std=c++11")
 env.Append(CCFLAGS="-DBOOST_ALL_DYN_LINK")
 
+env.Substfile(target="version.hpp",source="version.hpp.in")
 
 sources=[
 "shop/BasketListWidget.cpp",
@@ -21,10 +22,12 @@ sources=[
 #"shop/Order.cpp",
 
 "user/User.cpp",
+"user/UserDisplay.cpp",
 "user/Session.cpp",
 
 "application.cpp",
 "sharebuy.cpp",
+"UserSettings.cpp"
 ]
 
 print(sources)

@@ -9,12 +9,18 @@ public:
 	void onInternalPathChange();
 	ShareBuy(const Wt::WEnvironment &env, shared_ptr<std::map<string, shared_ptr<Shop> > > shops, string databaseFile);
 	Session dbSession;
+	Wt::Auth::AuthWidget *getAuthWidget();
+
 private:
 	void showUserItems();
 	void showUserOrders();
+	void showUserSettings();
 	void showShop(string shopName);
+	void showUserProfile(string userId);
+	void showAbout();
 	shared_ptr<std::map<string, shared_ptr<Shop> > > shops;
 	Wt::WContainerWidget *content;
-	Wt::Auth::AuthWidget *getAuthWidget();
+	void createAuthWidget();
+	Wt::Auth::AuthWidget *authWidget;
 	//Wt::WStackedWidget *contentsStack;
 };

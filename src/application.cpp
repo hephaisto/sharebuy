@@ -12,11 +12,15 @@
 #include "shop/BasketListWidget.hpp"
 #include "shop/InputItemWidget.hpp"
 #include "shop/ItemGroupCheckbox.hpp"
+#include "UserSettings.hpp"
+#include "user/UserDisplay.hpp"
+#include "version.hpp"
 
 ShareBuy::ShareBuy(const Wt::WEnvironment &env, shared_ptr<std::map<string, shared_ptr<Shop> > > shops, string databaseFile)
 :Wt::WApplication(env),
 dbSession(databaseFile),
-shops(shops)
+shops(shops),
+authWidget(NULL)
 {
 	// app metadata
 	enableUpdates(true); // necessary for updates from the backend parsing web pages
@@ -52,19 +56,49 @@ shops(shops)
 	myOrders->setLink(Wt::WLink(Wt::WLink::InternalPath,"/user/orders"));
 	myOrders->setSelectable(false);
 
+	// RIGHT MENU
+	Wt::WMenu *rightMenu = new Wt::WMenu();
+	nav->addMenu(rightMenu, Wt::AlignRight);
+
+	// settings
+	Wt::WMenuItem *settings = rightMenu->addItem("Settings");
+	settings->setLink(Wt::WLink(Wt::WLink::InternalPath,"/user/settings"));
+	settings->setSelectable(false);
+
+	// about
+	Wt::WMenuItem *about = rightMenu->addItem("About Sharebuy");
+	about->setLink(Wt::WLink(Wt::WLink::InternalPath,"/about"));
+	about->setSelectable(false);
+
+	// MAIN WINDOW
+	
 	// main window
 	Wt::WContainerWidget *main = new Wt::WContainerWidget(this->root());
 	Wt::WBorderLayout *layout = new Wt::WBorderLayout();
 	main->setLayout(layout);
 
+	// content & auth
 	content = new Wt::WContainerWidget();
 	layout->addWidget(content, Wt::WBorderLayout::Center);
-	layout->addWidget(getAuthWidget(), Wt::WBorderLayout::East);
+	createAuthWidget();
+	layout->addWidget(authWidget, Wt::WBorderLayout::East);
 
 	// session state
 	dbSession.login().changed().connect(this,&ShareBuy::onInternalPathChange);
 	internalPathChanged().connect(this,&ShareBuy::onInternalPathChange);
 	onInternalPathChange();
+}
+
+void ShareBuy::showUserSettings()
+{
+	PUser user = dbSession.user();
+	new UserSettings(content);
+}
+
+void ShareBuy::showAbout()
+{
+	auto text = boost::format("This server is running ShareBuy version <b>%1%</b>. Visit <a href=\"%2%\">%2%</a> for more information.") % VERSION_STRING % "https://github.com/hephaisto/sharebuy";
+	new Wt::WText(text.str(), content);
 }
 
 void ShareBuy::showUserItems()
@@ -94,7 +128,10 @@ void ShareBuy::showUserItems()
 	BOOST_FOREACH(auto order, myOrders)
 	{
 		BasketListWidget *ordered=new BasketListWidget(shops, "", user, boost::lexical_cast<string>(order.id()), content);
-		ordered->setTitle("Ordered by "+order->user->getUsername()); // TODO get user name from order
+		ordered->setTitleBar(true);
+		Wt::WWidget *orderedTitle=new Wt::WAnchor(Wt::WLink(Wt::WLink::Type::InternalPath, "/user/profile/"+boost::lexical_cast<string>(order->user.id())),"Ordered by "+order->user->getUsername());
+		orderedTitle->addStyleClass("accordion-toggle");
+		ordered->titleBarWidget()->addWidget(orderedTitle);
 		ordered->setOnlyOrderStatus(true);
 		ordered->update();
 	}
@@ -139,6 +176,15 @@ void ShareBuy::showShop(string shopName)
 		new Wt::WText("Shop "+shopName+" is not configured",content);
 }
 
+void ShareBuy::showUserProfile(string userId)
+{
+	dbo::Transaction transaction(dbSession);
+
+	PUser user = dbSession.find<User>().where("id = ?").bind(userId);
+
+	new UserDisplay(user, dbSession.user()->isAdmin, content);
+}
+
 void ShareBuy::onInternalPathChange()
 {
 	content->clear();
@@ -158,6 +204,15 @@ void ShareBuy::onInternalPathChange()
 			showUserItems();
 		else if(internalPath()=="/user/orders")
 			showUserOrders();
+		else if(internalPath()=="/user/settings")
+			showUserSettings();
+		else if(internalPath()=="/about")
+			showAbout();
+		else if(internalPath().substr(0,14)=="/user/profile/")
+		{
+			string userId = internalPath().substr(14);
+			showUserProfile(userId);
+		}
 		else if(internalPath().substr(0,6)=="/shop/")
 		{
 			string shopName = internalPath().substr(6);
@@ -172,14 +227,20 @@ void ShareBuy::onInternalPathChange()
 		//new Wt::WText("you have to be logged in to access this page", content);
 	}
 }
-Wt::Auth::AuthWidget* ShareBuy::getAuthWidget()
+void ShareBuy::createAuthWidget()
 {
-	Wt::Auth::AuthWidget *authWidget=new Wt::Auth::AuthWidget(Session::auth(), dbSession.users(), dbSession.login());
+	if(authWidget)
+		delete authWidget;
+
+	authWidget=new Wt::Auth::AuthWidget(Session::auth(), dbSession.users(), dbSession.login());
 
 	authWidget->model()->addPasswordAuth(/*dynamic_cast<Wt::Auth::AbstractPasswordService*>(*/&Session::passwordAuth());
 	/*authWidget->model()->addOAuth(Session::oAuth());*/
 	authWidget->setRegistrationEnabled(true);
-
 	authWidget->processEnvironment();
+}
+
+Wt::Auth::AuthWidget* ShareBuy::getAuthWidget()
+{
 	return authWidget;
 }
