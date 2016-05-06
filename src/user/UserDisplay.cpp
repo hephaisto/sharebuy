@@ -24,6 +24,10 @@ UserDisplay::UserDisplay(PUser user, bool adminMode, Wt::WContainerWidget *paren
 	table->elementAt(row, 1)->addWidget(new Wt::WText(user->isAdmin?"admin":"normal"));
 	row++;
 
+	table->elementAt(row, 0)->addWidget(new Wt::WText("about"));
+	table->elementAt(row, 1)->addWidget(new Wt::WText(user->about));
+	row++;
+
 	if(adminMode)
 	{
 		table->elementAt(row, 0)->addWidget(new Wt::WText("reset password"));
