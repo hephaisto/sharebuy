@@ -16,7 +16,8 @@
 ShareBuy::ShareBuy(const Wt::WEnvironment &env, shared_ptr<std::map<string, shared_ptr<Shop> > > shops, string databaseFile)
 :Wt::WApplication(env),
 dbSession(databaseFile),
-shops(shops)
+shops(shops),
+authWidget(NULL)
 {
 	// app metadata
 	enableUpdates(true); // necessary for updates from the backend parsing web pages
