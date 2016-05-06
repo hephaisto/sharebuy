@@ -14,6 +14,7 @@
 #include "shop/ItemGroupCheckbox.hpp"
 #include "UserSettings.hpp"
 #include "user/UserDisplay.hpp"
+#include "version.hpp"
 
 ShareBuy::ShareBuy(const Wt::WEnvironment &env, shared_ptr<std::map<string, shared_ptr<Shop> > > shops, string databaseFile)
 :Wt::WApplication(env),
@@ -64,6 +65,11 @@ authWidget(NULL)
 	settings->setLink(Wt::WLink(Wt::WLink::InternalPath,"/user/settings"));
 	settings->setSelectable(false);
 
+	// about
+	Wt::WMenuItem *about = rightMenu->addItem("About Sharebuy");
+	about->setLink(Wt::WLink(Wt::WLink::InternalPath,"/about"));
+	about->setSelectable(false);
+
 	// MAIN WINDOW
 	
 	// main window
@@ -87,6 +93,12 @@ void ShareBuy::showUserSettings()
 {
 	PUser user = dbSession.user();
 	new UserSettings(content);
+}
+
+void ShareBuy::showAbout()
+{
+	auto text = boost::format("This server is running ShareBuy version <b>%1%</b>. Visit <a href=\"%2%\">%2%</a> for more information.") % VERSION_STRING % "https://github.com/hephaisto/sharebuy";
+	new Wt::WText(text.str(), content);
 }
 
 void ShareBuy::showUserItems()
@@ -194,6 +206,8 @@ void ShareBuy::onInternalPathChange()
 			showUserOrders();
 		else if(internalPath()=="/user/settings")
 			showUserSettings();
+		else if(internalPath()=="/about")
+			showAbout();
 		else if(internalPath().substr(0,14)=="/user/profile/")
 		{
 			string userId = internalPath().substr(14);
