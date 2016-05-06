@@ -116,7 +116,10 @@ void ShareBuy::showUserItems()
 	BOOST_FOREACH(auto order, myOrders)
 	{
 		BasketListWidget *ordered=new BasketListWidget(shops, "", user, boost::lexical_cast<string>(order.id()), content);
-		ordered->setTitle("Ordered by "+order->user->getUsername()); // TODO get user name from order
+		ordered->setTitleBar(true);
+		Wt::WWidget *orderedTitle=new Wt::WAnchor(Wt::WLink(Wt::WLink::Type::InternalPath, "/user/profile/"+boost::lexical_cast<string>(order->user.id())),"Ordered by "+order->user->getUsername());
+		orderedTitle->addStyleClass("accordion-toggle");
+		ordered->titleBarWidget()->addWidget(orderedTitle);
 		ordered->setOnlyOrderStatus(true);
 		ordered->update();
 	}

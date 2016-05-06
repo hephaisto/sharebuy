@@ -168,7 +168,7 @@ void BasketListWidget::update()
 		BOOST_FOREACH(auto it, userSums)
 		{
 			totalSum+=it.second;
-			table2->elementAt(row, 0)->addWidget(new Wt::WText(it.first->getUsername()));
+			table2->elementAt(row, 0)->addWidget(new Wt::WAnchor(Wt::WLink(Wt::WLink::Type::InternalPath, "/user/profile/"+boost::lexical_cast<string>(it.first.id())),it.first->getUsername()));
 			table2->elementAt(row, 1)->addWidget(new Wt::WText(boost::lexical_cast<string>(it.second)));
 			row++;
 		}
