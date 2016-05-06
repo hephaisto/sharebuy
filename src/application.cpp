@@ -13,6 +13,7 @@
 #include "shop/InputItemWidget.hpp"
 #include "shop/ItemGroupCheckbox.hpp"
 #include "UserSettings.hpp"
+#include "user/UserDisplay.hpp"
 
 ShareBuy::ShareBuy(const Wt::WEnvironment &env, shared_ptr<std::map<string, shared_ptr<Shop> > > shops, string databaseFile)
 :Wt::WApplication(env),
@@ -160,6 +161,15 @@ void ShareBuy::showShop(string shopName)
 		new Wt::WText("Shop "+shopName+" is not configured",content);
 }
 
+void ShareBuy::showUserProfile(string userId)
+{
+	dbo::Transaction transaction(dbSession);
+
+	PUser user = dbSession.find<User>().where("id = ?").bind(userId);
+
+	new UserDisplay(user, dbSession.user()->isAdmin, content);
+}
+
 void ShareBuy::onInternalPathChange()
 {
 	content->clear();
@@ -181,6 +191,11 @@ void ShareBuy::onInternalPathChange()
 			showUserOrders();
 		else if(internalPath()=="/user/settings")
 			showUserSettings();
+		else if(internalPath().substr(0,14)=="/user/profile/")
+		{
+			string userId = internalPath().substr(14);
+			showUserProfile(userId);
+		}
 		else if(internalPath().substr(0,6)=="/shop/")
 		{
 			string shopName = internalPath().substr(6);

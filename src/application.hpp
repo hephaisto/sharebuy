@@ -16,6 +16,7 @@ private:
 	void showUserOrders();
 	void showUserSettings();
 	void showShop(string shopName);
+	void showUserProfile(string userId);
 	shared_ptr<std::map<string, shared_ptr<Shop> > > shops;
 	Wt::WContainerWidget *content;
 	void createAuthWidget();

@@ -21,6 +21,7 @@ sources=[
 #"shop/Order.cpp",
 
 "user/User.cpp",
+"user/UserDisplay.cpp",
 "user/Session.cpp",
 
 "application.cpp",
