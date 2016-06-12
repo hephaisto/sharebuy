@@ -124,8 +124,8 @@ void BasketListWidget::update()
 		table->elementAt(number+1,1)->addWidget(new Wt::WText(item->shop_specific_id+" / "+item->shop_specific_id_2));
 		table->elementAt(number+1,2)->addWidget(new Wt::WAnchor(Wt::WLink(item->url),item->title));
 		table->elementAt(number+1,3)->addWidget(new Wt::WText(boost::lexical_cast<string>(item->count)));
-		table->elementAt(number+1,4)->addWidget(new Wt::WText(boost::lexical_cast<string>(item->price)));
-		table->elementAt(number+1,5)->addWidget(new Wt::WText(boost::lexical_cast<string>(item->count*item->price)));
+		table->elementAt(number+1,4)->addWidget(new Wt::WText((boost::format(priceFmt) % item->price).str()));
+		table->elementAt(number+1,5)->addWidget(new Wt::WText((boost::format(priceFmt) % (item->count*item->price)).str()));
 		userSums[item->user]+=item->count*item->price;
 		if( canDelete )
 		{
@@ -169,13 +169,13 @@ void BasketListWidget::update()
 		{
 			totalSum+=it.second;
 			table2->elementAt(row, 0)->addWidget(new Wt::WAnchor(Wt::WLink(Wt::WLink::Type::InternalPath, "/user/profile/"+boost::lexical_cast<string>(it.first.id())),it.first->getUsername()));
-			table2->elementAt(row, 1)->addWidget(new Wt::WText(boost::lexical_cast<string>(it.second)));
+			table2->elementAt(row, 1)->addWidget(new Wt::WText((boost::format(priceFmt) % it.second).str()));
 			row++;
 		}
 		if(userSums.size()>1)
 		{
 			table2->elementAt(row, 0)->addWidget(new Wt::WText("Total"));
-			table2->elementAt(row, 1)->addWidget(new Wt::WText(boost::lexical_cast<string>(totalSum)));
+			table2->elementAt(row, 1)->addWidget(new Wt::WText((boost::format(priceFmt) % totalSum).str()));
 		}
 	}
 

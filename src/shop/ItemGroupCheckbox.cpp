@@ -81,12 +81,12 @@ total(0)
 				if(selectedUserIds.empty())
 					btnOrder->setEnabled(false);
 			}
-			totalField->setText(boost::lexical_cast<string>(total));
+			totalField->setText((boost::format(priceFmt) % total).str());
 		});
 		table->elementAt(row,3)->addWidget(checkbox);
 		table->elementAt(row,0)->addWidget(new Wt::WAnchor(Wt::WLink(Wt::WLink::Type::InternalPath, "/user/profile/"+boost::lexical_cast<string>(userId)),tuple.get<1>()));
 		table->elementAt(row,1)->addWidget(new Wt::WText(boost::lexical_cast<string>(tuple.get<2>())));
-		table->elementAt(row,2)->addWidget(new Wt::WText(boost::lexical_cast<string>(tuple.get<3>())));
+		table->elementAt(row,2)->addWidget(new Wt::WText((boost::format(priceFmt) % tuple.get<3>()).str()));
 
 		/*
 		std::cout<<"userID: "<<tuple.get<0>()<<"\n";
