@@ -229,6 +229,8 @@ OrderOverviewForWisher::OrderOverviewForWisher(ShopList shops, POrder order, PUs
 		title->addWidget(new Wt::WText("; ordered "+order->orderTime.timeTo(Wt::WDateTime::currentDateTime())+" ago"));
 		if(order->receiveTime.isValid())
 			title->addWidget(new Wt::WText("; received "+order->receiveTime.timeTo(Wt::WDateTime::currentDateTime())+" ago"));
+		else
+			title->addWidget(new Wt::WText("; not received yet"));
 	}
 	else
 		title->addWidget(new Wt::WText("; order not confirmed yet"));
@@ -238,7 +240,7 @@ void OrderOverviewForWisher::update()
 {
 	BasketListWidget::update();
 	double totalSum = userSums.begin()->second; // only one entry -> use the first
-	totalDisplay->setText((boost::format(priceFmt) % totalSum).str());
+	totalDisplay->setText("<b>"+(boost::format(priceFmt) % totalSum).str()+"</b>");
 }
 
 
