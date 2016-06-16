@@ -33,6 +33,7 @@ total(0)
 	Wt::WTable *table = new Wt::WTable(root);
 	table->setHeaderCount(1);
 	table->setWidth(Wt::WLength("50%"));
+	table->setStyleClass("table");
 
 	table->elementAt(0, 0)->addWidget(new Wt::WText("user"));
 	table->elementAt(0, 1)->addWidget(new Wt::WText("items"));

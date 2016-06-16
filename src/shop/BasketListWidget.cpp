@@ -38,6 +38,7 @@ void BasketListWidget::update()
 	Wt::WTable *table = new Wt::WTable(root);
 	table->setHeaderCount(1);
 	table->setWidth(Wt::WLength("100%"));
+	table->setStyleClass("table");
 
 	table->elementAt(0, 0)->addWidget(new Wt::WText(""));
 	table->elementAt(0, 1)->addWidget(new Wt::WText("Number"));
