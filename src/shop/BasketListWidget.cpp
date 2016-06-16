@@ -92,9 +92,64 @@ void BasketListWidget::update()
 
 OrderOverviewForOrderer::OrderOverviewForOrderer(ShopList shops, POrder order, Wt::WContainerWidget *parent)
 //:BasketListWidget(shops, "", PUser(), orderId, parent)
-:BasketListWidget(shops, static_cast<ShareBuy*>(Wt::WApplication::instance())->dbSession.find<Item>().where("ordering_id = ?").bind(order.id()).orderBy("user_id"), true, parent)
+:BasketListWidget(shops, static_cast<ShareBuy*>(Wt::WApplication::instance())->dbSession.find<Item>().where("ordering_id = ?").bind(order.id()).orderBy("user_id"), !order->orderTime.isValid(), parent)
 {
-	setTitle("Order");
+	setTitleBar(true);
+
+	Wt::WContainerWidget *title = new Wt::WContainerWidget(titleBarWidget());
+	title->addStyleClass("accordion-toggle");
+
+	title->addWidget(new Wt::WText("Order"));
+
+	confirmOrder = new Wt::WContainerWidget();
+	confirmOrder->setInline(true);
+	title->addWidget(confirmOrder);
+
+	confirmReceive = new Wt::WContainerWidget();
+	confirmReceive->setInline(true);
+	title->addWidget(confirmReceive);
+
+	if(order->orderTime.isValid())
+	{
+		confirmOrder->addWidget(new Wt::WText("; ordered "+order->orderTime.timeTo(Wt::WDateTime::currentDateTime())+" ago"));
+		if(order->receiveTime.isValid())
+		{
+			confirmReceive->addWidget(new Wt::WText("; received "+order->receiveTime.timeTo(Wt::WDateTime::currentDateTime())+" ago"));
+		}
+		else
+		{
+			Wt::WPushButton *btn = new Wt::WPushButton("received");
+			btn->clicked().connect(std::bind([this, order, btn]()
+			{
+				Session& dbSession = static_cast<ShareBuy*>(Wt::WApplication::instance())->dbSession;
+				dbo::Transaction transaction(dbSession);
+
+				order.modify()->receiveTime = Wt::WDateTime::currentDateTime();
+				delete btn;
+				confirmReceive->addWidget(new Wt::WText("; received "+order->receiveTime.timeTo(Wt::WDateTime::currentDateTime())+" ago"));
+
+				update();
+			}));
+			title->addWidget(btn);
+		}
+	}
+	else
+	{
+		Wt::WPushButton *btn = new Wt::WPushButton("confirm");
+		btn->clicked().connect(std::bind([this, order, btn]()
+		{
+			Session& dbSession = static_cast<ShareBuy*>(Wt::WApplication::instance())->dbSession;
+			dbo::Transaction transaction(dbSession);
+
+			order.modify()->orderTime = Wt::WDateTime::currentDateTime();
+			delete btn;
+			confirmOrder->addWidget(new Wt::WText("; ordered "+order->orderTime.timeTo(Wt::WDateTime::currentDateTime())+" ago"));
+
+			showRemoveButtons = false;
+			update();
+		}));
+		title->addWidget(btn);
+	}
 }
 
 void OrderOverviewForOrderer::update()
