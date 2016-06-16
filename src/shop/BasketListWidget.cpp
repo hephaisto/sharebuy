@@ -34,58 +34,66 @@ void BasketListWidget::update()
 	PItems database_items = query; // execute query
 	std::set<PItem> items(database_items.begin(),database_items.end());
 
-	// main table
-	Wt::WTable *table = new Wt::WTable(root);
-	table->setHeaderCount(1);
-	table->setWidth(Wt::WLength("100%"));
-
-	table->elementAt(0, 0)->addWidget(new Wt::WText(""));
-	table->elementAt(0, 1)->addWidget(new Wt::WText("Number"));
-	table->elementAt(0, 2)->addWidget(new Wt::WText("Title"));
-	table->elementAt(0, 3)->addWidget(new Wt::WText("Count"));
-	table->elementAt(0, 4)->addWidget(new Wt::WText("Price"));
-	table->elementAt(0, 5)->addWidget(new Wt::WText("Total"));
-
-
-	size_t number=0;
-	BOOST_FOREACH(PItem item,items)
+	if(items.size() == 0)
 	{
-		std::cout<<"item "<<number<<"\n";
-		shared_ptr<Shop> shop = (*shops)[item->shop_name];
-		string imageURL = item->formatInto(shop->imageTemplate, number);
-		table->elementAt(number+1,0)->addWidget(new Wt::WImage(imageURL));
-		table->elementAt(number+1,1)->addWidget(new Wt::WText(item->shop_specific_id+" / "+item->shop_specific_id_2));
-		table->elementAt(number+1,2)->addWidget(new Wt::WAnchor(Wt::WLink(item->url),item->title));
-		table->elementAt(number+1,3)->addWidget(new Wt::WText(boost::lexical_cast<string>(item->count)));
-		table->elementAt(number+1,4)->addWidget(new Wt::WText((boost::format(priceFmt) % item->price).str()));
-		table->elementAt(number+1,5)->addWidget(new Wt::WText((boost::format(priceFmt) % (item->count*item->price)).str()));
-		userSums[item->user]+=item->count*item->price;
-		if( showRemoveButtons )
+		new Wt::WText("There are no items in this list", root);
+	}
+	else
+	{
+		// main table
+		Wt::WTable *table = new Wt::WTable(root);
+		table->setHeaderCount(1);
+		table->setWidth(Wt::WLength("100%"));
+		table->setStyleClass("table");
+
+		table->elementAt(0, 0)->addWidget(new Wt::WText(""));
+		table->elementAt(0, 1)->addWidget(new Wt::WText("Number"));
+		table->elementAt(0, 2)->addWidget(new Wt::WText("Title"));
+		table->elementAt(0, 3)->addWidget(new Wt::WText("Count"));
+		table->elementAt(0, 4)->addWidget(new Wt::WText("Price"));
+		table->elementAt(0, 5)->addWidget(new Wt::WText("Total"));
+
+
+		size_t number=0;
+		BOOST_FOREACH(PItem item,items)
 		{
-			Wt::WPushButton *btn = new Wt::WPushButton("remove");
-			if( item->order)
+			std::cout<<"item "<<number<<"\n";
+			shared_ptr<Shop> shop = (*shops)[item->shop_name];
+			string imageURL = item->formatInto(shop->imageTemplate, number);
+			table->elementAt(number+1,0)->addWidget(new Wt::WImage(imageURL));
+			table->elementAt(number+1,1)->addWidget(new Wt::WText(item->shop_specific_id+" / "+item->shop_specific_id_2));
+			table->elementAt(number+1,2)->addWidget(new Wt::WAnchor(Wt::WLink(item->url),item->title));
+			table->elementAt(number+1,3)->addWidget(new Wt::WText(boost::lexical_cast<string>(item->count)));
+			table->elementAt(number+1,4)->addWidget(new Wt::WText((boost::format(priceFmt) % item->price).str()));
+			table->elementAt(number+1,5)->addWidget(new Wt::WText((boost::format(priceFmt) % (item->count*item->price)).str()));
+			userSums[item->user]+=item->count*item->price;
+			if( showRemoveButtons )
 			{
-				btn->clicked().connect([this, &dbSession, item](Wt::WMouseEvent event) mutable
+				Wt::WPushButton *btn = new Wt::WPushButton("remove");
+				if( item->order)
 				{
-					dbo::Transaction transaction(dbSession);
-					item->order.modify()->items.erase(item);
-					transaction.commit();
-					update();
-				});
-			}
-			else
-			{
-				btn->clicked().connect([this, &dbSession, item](Wt::WMouseEvent event) mutable
+					btn->clicked().connect([this, &dbSession, item](Wt::WMouseEvent event) mutable
+					{
+						dbo::Transaction transaction(dbSession);
+						item->order.modify()->items.erase(item);
+						transaction.commit();
+						update();
+					});
+				}
+				else
 				{
-					dbo::Transaction transaction(dbSession);
-					item.remove();
-					transaction.commit();
-					update();
-				});
+					btn->clicked().connect([this, &dbSession, item](Wt::WMouseEvent event) mutable
+					{
+						dbo::Transaction transaction(dbSession);
+						item.remove();
+						transaction.commit();
+						update();
+					});
+				}
+				table->elementAt(number+1,6)->addWidget(btn);
 			}
-			table->elementAt(number+1,6)->addWidget(btn);
+			number++;
 		}
-		number++;
 	}
 }
 
