@@ -92,9 +92,64 @@ void BasketListWidget::update()
 
 OrderOverviewForOrderer::OrderOverviewForOrderer(ShopList shops, POrder order, Wt::WContainerWidget *parent)
 //:BasketListWidget(shops, "", PUser(), orderId, parent)
-:BasketListWidget(shops, static_cast<ShareBuy*>(Wt::WApplication::instance())->dbSession.find<Item>().where("ordering_id = ?").bind(order.id()).orderBy("user_id"), true, parent)
+:BasketListWidget(shops, static_cast<ShareBuy*>(Wt::WApplication::instance())->dbSession.find<Item>().where("ordering_id = ?").bind(order.id()).orderBy("user_id"), !order->orderTime.isValid(), parent)
 {
-	setTitle("Order");
+	setTitleBar(true);
+
+	Wt::WContainerWidget *title = new Wt::WContainerWidget(titleBarWidget());
+	title->addStyleClass("accordion-toggle");
+
+	title->addWidget(new Wt::WText("Order"));
+
+	confirmOrder = new Wt::WContainerWidget();
+	confirmOrder->setInline(true);
+	title->addWidget(confirmOrder);
+
+	confirmReceive = new Wt::WContainerWidget();
+	confirmReceive->setInline(true);
+	title->addWidget(confirmReceive);
+
+	if(order->orderTime.isValid())
+	{
+		confirmOrder->addWidget(new Wt::WText("; ordered "+order->orderTime.timeTo(Wt::WDateTime::currentDateTime())+" ago"));
+		if(order->receiveTime.isValid())
+		{
+			confirmReceive->addWidget(new Wt::WText("; received "+order->receiveTime.timeTo(Wt::WDateTime::currentDateTime())+" ago"));
+		}
+		else
+		{
+			Wt::WPushButton *btn = new Wt::WPushButton("received");
+			btn->clicked().connect(std::bind([this, order, btn]()
+			{
+				Session& dbSession = static_cast<ShareBuy*>(Wt::WApplication::instance())->dbSession;
+				dbo::Transaction transaction(dbSession);
+
+				order.modify()->receiveTime = Wt::WDateTime::currentDateTime();
+				delete btn;
+				confirmReceive->addWidget(new Wt::WText("; received "+order->receiveTime.timeTo(Wt::WDateTime::currentDateTime())+" ago"));
+
+				update();
+			}));
+			title->addWidget(btn);
+		}
+	}
+	else
+	{
+		Wt::WPushButton *btn = new Wt::WPushButton("confirm");
+		btn->clicked().connect(std::bind([this, order, btn]()
+		{
+			Session& dbSession = static_cast<ShareBuy*>(Wt::WApplication::instance())->dbSession;
+			dbo::Transaction transaction(dbSession);
+
+			order.modify()->orderTime = Wt::WDateTime::currentDateTime();
+			delete btn;
+			confirmOrder->addWidget(new Wt::WText("; ordered "+order->orderTime.timeTo(Wt::WDateTime::currentDateTime())+" ago"));
+
+			showRemoveButtons = false;
+			update();
+		}));
+		title->addWidget(btn);
+	}
 }
 
 void OrderOverviewForOrderer::update()
@@ -159,36 +214,37 @@ OrderOverviewForWisher::OrderOverviewForWisher(ShopList shops, POrder order, PUs
 :BasketListWidget(shops, static_cast<ShareBuy*>(Wt::WApplication::instance())->dbSession.find<Item>().where("ordering_id = ?").bind(order.id()).where("user_id = ?").bind(user.id()), false, parent)
 {
 	setTitleBar(true);
-	Wt::WWidget *orderedTitle=new Wt::WAnchor(Wt::WLink(Wt::WLink::Type::InternalPath, "/user/profile/"+boost::lexical_cast<string>(order->user.id())),"Ordered by "+order->user->getUsername());
-	orderedTitle->addStyleClass("accordion-toggle");
-	titleBarWidget()->addWidget(orderedTitle);
+
+	Wt::WContainerWidget *title = new Wt::WContainerWidget(titleBarWidget());
+	title->addStyleClass("accordion-toggle");
+
+	title->addWidget(new Wt::WText("Ordered by "));
+	title->addWidget(new Wt::WAnchor(Wt::WLink(Wt::WLink::Type::InternalPath, "/user/profile/"+boost::lexical_cast<string>(order->user.id())),order->user->getUsername()));
+	title->addWidget(new Wt::WText("; total: "));
+	totalDisplay = new Wt::WText("???");
+	title->addWidget(totalDisplay);
+
+	if(order->orderTime.isValid())
+	{
+		title->addWidget(new Wt::WText("; ordered "+order->orderTime.timeTo(Wt::WDateTime::currentDateTime())+" ago"));
+		if(order->receiveTime.isValid())
+			title->addWidget(new Wt::WText("; received "+order->receiveTime.timeTo(Wt::WDateTime::currentDateTime())+" ago"));
+		else
+			title->addWidget(new Wt::WText("; not received yet"));
+	}
+	else
+		title->addWidget(new Wt::WText("; order not confirmed yet"));
 }
 
 void OrderOverviewForWisher::update()
 {
 	BasketListWidget::update();
 	double totalSum = userSums.begin()->second; // only one entry -> use the first
-
-	Wt::WTable *table2 = new Wt::WTable(root);
-	table2->setHeaderCount(1);
-	table2->setWidth(Wt::WLength("30%"));
-	table2->elementAt(0, 0)->addWidget(new Wt::WText("User"));
-	table2->elementAt(0, 1)->addWidget(new Wt::WText("Total"));
-
-	size_t row=1;
-	BOOST_FOREACH(auto it, userSums)
-	{
-		totalSum+=it.second;
-		table2->elementAt(row, 0)->addWidget(new Wt::WAnchor(Wt::WLink(Wt::WLink::Type::InternalPath, "/user/profile/"+boost::lexical_cast<string>(it.first.id())),it.first->getUsername()));
-		table2->elementAt(row, 1)->addWidget(new Wt::WText((boost::format(priceFmt) % it.second).str()));
-		row++;
-	}
-	if(userSums.size()>1)
-	{
-		table2->elementAt(row, 0)->addWidget(new Wt::WText("Total"));
-		table2->elementAt(row, 1)->addWidget(new Wt::WText((boost::format(priceFmt) % totalSum).str()));
-	}
+	totalDisplay->setText("<b>"+(boost::format(priceFmt) % totalSum).str()+"</b>");
 }
+
+
+
 
 WishlistForOrderer::WishlistForOrderer(ShopList shops, string shopname, Wt::WContainerWidget *parent)
 :BasketListWidget(shops, static_cast<ShareBuy*>(Wt::WApplication::instance())->dbSession.find<Item>().where("shop_name = ?").bind(shopname).where("ordering_id is null"), false, parent)

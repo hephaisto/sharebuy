@@ -31,6 +31,9 @@ class OrderOverviewForOrderer : public BasketListWidget
 public:
 	OrderOverviewForOrderer(ShopList shops, POrder order, Wt::WContainerWidget *parent);
 	virtual void update();
+private:
+	Wt::WContainerWidget *confirmOrder;
+	Wt::WContainerWidget *confirmReceive;
 };
 
 /// Order status for the wishing user
@@ -40,6 +43,8 @@ class OrderOverviewForWisher : public BasketListWidget
 public:
 	OrderOverviewForWisher(ShopList shops, POrder order, PUser user, Wt::WContainerWidget *parent);
 	virtual void update();
+private:
+	Wt::WText *totalDisplay;
 };
 
 /// Wishlist overview for ordering user
