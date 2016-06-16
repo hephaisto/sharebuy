@@ -40,6 +40,8 @@ class OrderOverviewForWisher : public BasketListWidget
 public:
 	OrderOverviewForWisher(ShopList shops, POrder order, PUser user, Wt::WContainerWidget *parent);
 	virtual void update();
+private:
+	Wt::WText *totalDisplay;
 };
 
 /// Wishlist overview for ordering user
