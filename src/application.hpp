@@ -3,6 +3,8 @@
 #include "shop/Shop.hpp"
 #include "user/Session.hpp"
 
+static const boost::format priceFmt("%|1.2f|");
+
 class ShareBuy : public Wt::WApplication
 {
 public:

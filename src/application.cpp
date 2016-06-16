@@ -25,7 +25,7 @@ authWidget(NULL)
 	// app metadata
 	enableUpdates(true); // necessary for updates from the backend parsing web pages
 	Wt::WBootstrapTheme *theme=new Wt::WBootstrapTheme();
-	//theme->setVersion(3);
+	theme->setVersion(Wt::WBootstrapTheme::Version::Version3);
 	setTheme(theme);
 
 	// navbar
@@ -106,18 +106,12 @@ void ShareBuy::showUserItems()
 	new Wt::WText("<h1>Your personal wishlist</h1>", content);
 	new Wt::WText("<p>Paste the URL for the item and the number of items below.</p>", content);
 	InputItemWidget *input = new InputItemWidget(shops,content);
-	//dbo::Query<PItem> query = dbSession.find<Item>().where("user_id = ?").bind(user.id());
-	//BasketListWidget *add=new BasketListWidget(shops, query, content);
 	
 	PUser user = dbSession.user();
-	
-	BasketListWidget *pending=new BasketListWidget(shops, "", user, "", content);
-	pending->setTitle("Your items");
-	pending->setCanDelete(true);
-	pending->setOnlyOrderStatus(false);
-	pending->update();
 
-	input->itemEntered().connect(pending, &BasketListWidget::update);
+	WishlistForWisher *p = new WishlistForWisher(shops, user, content);
+	p->update();
+	input->itemEntered().connect(p, &WishlistForWisher::update);
 
 	// find orders with items that belong to userId
 	dbo::Transaction transaction(dbSession);
@@ -127,12 +121,7 @@ void ShareBuy::showUserItems()
 
 	BOOST_FOREACH(auto order, myOrders)
 	{
-		BasketListWidget *ordered=new BasketListWidget(shops, "", user, boost::lexical_cast<string>(order.id()), content);
-		ordered->setTitleBar(true);
-		Wt::WWidget *orderedTitle=new Wt::WAnchor(Wt::WLink(Wt::WLink::Type::InternalPath, "/user/profile/"+boost::lexical_cast<string>(order->user.id())),"Ordered by "+order->user->getUsername());
-		orderedTitle->addStyleClass("accordion-toggle");
-		ordered->titleBarWidget()->addWidget(orderedTitle);
-		ordered->setOnlyOrderStatus(true);
+		OrderOverviewForWisher *ordered=new OrderOverviewForWisher(shops, order, user, content);
 		ordered->update();
 	}
 }
@@ -146,10 +135,7 @@ void ShareBuy::showUserOrders()
 
 	BOOST_FOREACH(auto order, myOrders)
 	{
-		BasketListWidget *list=new BasketListWidget(shops, "", PUser(), boost::lexical_cast<string>(order.id()), content);
-		list->setTitle("Order");
-		list->setShowAddToCartButton(true);
-		list->setCanDelete(true);
+		OrderOverviewForOrderer *list=new OrderOverviewForOrderer(shops, order, content);
 		list->update();
 	}
 
@@ -165,11 +151,7 @@ void ShareBuy::showShop(string shopName)
 		ItemGroupCheckbox *groupCb = new ItemGroupCheckbox(shopName, content);
 		groupCb->setTitle("Which users to order for?");
 
-		//dbo::Query<PItem> query = dbSession.find<Item>().where("shop_name = ?").bind(shopName);
-		//BasketListWidget *add=new BasketListWidget(shops, query, content);
-		BasketListWidget *add=new BasketListWidget(shops, shopName, PUser(), "", content);
-		add->setTitle("Detailed list of items");
-		add->setOnlyOrderStatus(false);
+		WishlistForOrderer *add=new WishlistForOrderer(shops, shopName, content);
 		add->update();
 	}
 	else
