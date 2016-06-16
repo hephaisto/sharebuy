@@ -25,7 +25,7 @@ authWidget(NULL)
 	// app metadata
 	enableUpdates(true); // necessary for updates from the backend parsing web pages
 	Wt::WBootstrapTheme *theme=new Wt::WBootstrapTheme();
-	//theme->setVersion(3);
+	theme->setVersion(Wt::WBootstrapTheme::Version::Version3);
 	setTheme(theme);
 
 	// navbar
