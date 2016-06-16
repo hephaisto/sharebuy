@@ -31,5 +31,8 @@ public:
 	}
 };
 
+typedef dbo::ptr<Order> POrder;
+typedef dbo::collection<POrder> POrders;
+
 
 #endif //defined H_ORDER
