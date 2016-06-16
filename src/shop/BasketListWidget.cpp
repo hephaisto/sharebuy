@@ -159,9 +159,12 @@ OrderOverviewForWisher::OrderOverviewForWisher(ShopList shops, POrder order, PUs
 :BasketListWidget(shops, static_cast<ShareBuy*>(Wt::WApplication::instance())->dbSession.find<Item>().where("ordering_id = ?").bind(order.id()).where("user_id = ?").bind(user.id()), false, parent)
 {
 	setTitleBar(true);
-	Wt::WWidget *orderedTitle=new Wt::WAnchor(Wt::WLink(Wt::WLink::Type::InternalPath, "/user/profile/"+boost::lexical_cast<string>(order->user.id())),"Ordered by "+order->user->getUsername());
-	orderedTitle->addStyleClass("accordion-toggle");
-	titleBarWidget()->addWidget(orderedTitle);
+
+	Wt::WContainerWidget *title = new Wt::WContainerWidget(titleBarWidget());
+	title->addStyleClass("accordion-toggle");
+
+	title->addWidget(new Wt::WText("Ordered by "));
+	title->addWidget(new Wt::WAnchor(Wt::WLink(Wt::WLink::Type::InternalPath, "/user/profile/"+boost::lexical_cast<string>(order->user.id())),order->user->getUsername()));
 }
 
 void OrderOverviewForWisher::update()
