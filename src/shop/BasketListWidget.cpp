@@ -26,6 +26,8 @@ showRemoveButtons(showRemoveButtons)
 
 void BasketListWidget::update()
 {
+	root->clear();
+	userSums.clear();
 	Session& dbSession = static_cast<ShareBuy*>(Wt::WApplication::instance())->dbSession;
 	dbo::Transaction transaction(dbSession);
 
