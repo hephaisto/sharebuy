@@ -10,9 +10,7 @@ namespace bf=boost::filesystem;
 
 Shop::Shop(bpt::ptree &pt)
 :name(pt.get<string>("name")),
-#if !defined DO_NOT_COMPILE_APP
 basketAdd(std::make_shared<BasketFormTemplate>(pt.get_child("basket_form"))),
-#endif
 inputURLRegex{pt.get<string>("input_url_regex")},
 pageRegex{pt.get<string>("page_regex")},
 imageTemplate{pt.get<string>("item_image_template")}
