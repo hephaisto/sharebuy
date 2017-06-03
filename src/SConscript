@@ -51,6 +51,31 @@ libs=[
 sharebuy=env.Program(target="sharebuy",source=sources, LIBS=libs)
 Default(sharebuy)
 
+# check regex
+check_regex_sources = [
+"tools/check_regex.cpp",
+"shop/Shop.cpp",
+#"shop/BasketAddTemplate.cpp",
+#"shop/BasketFormTemplate.cpp",
+#"shop/Item.cpp",
+]
+
+check_regex_libs = [
+"wt",
+"wtdbo",
+"boost_system",
+"boost_filesystem",
+"boost_thread",
+"boost_regex",
+"boost_signals",
+"boost_log",
+"boost_log_setup",
+"pthread",
+]
+env.Append(CCFLAGS="-DDO_NOT_COMPILE_APP")
+check_regex = env.Program(target="check_regex", source=check_regex_sources, LIBS=check_regex_libs)
+env.Alias("check_regex", check_regex)
+
 # package
 shop_configs = glob.glob("../shops/*")
 print("x",shop_configs)

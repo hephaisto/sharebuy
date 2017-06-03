@@ -17,7 +17,9 @@ class Shop
 public:
 	explicit Shop(bpt::ptree &pt);
 	const string name;
+#if !defined DO_NOT_COMPILE_APP
 	const shared_ptr<const BasketAddTemplate> basketAdd;
+#endif
 	const boost::regex inputURLRegex;
 	boost::format imageTemplate;
 	const boost::regex pageRegex;
